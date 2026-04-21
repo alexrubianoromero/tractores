@@ -1,7 +1,18 @@
 <?php
-
+$raiz = dirname(dirname(dirname(__FILE__)));
+require_once($raiz.'/tractores/views/tractoresView.php');  
+require_once($raiz.'/clientes/views/clientesView.php');  
 class dashboardView
 {
+    protected $tractoresView;
+    protected $clientesView;
+
+    public function __construct()
+    {
+        $this->tractoresView = new tractoresView();
+    
+        $this->clientesView = new clientesView();
+    }
 
 
     public function verDashboard()
@@ -9,7 +20,7 @@ class dashboardView
         ?>
         <!DOCTYPE html>
         <html lang="es">
-        <head>
+            <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Dashboard - TractorFix Aranda</title>
@@ -166,6 +177,7 @@ class dashboardView
                 <div class="row align-items-center mb-4">
                     <div class="col-8">
                         <h2 class="fw-bold m-0">Estado del Taller</h2>
+                        <!-- <button onclick="mostrar();">mostrar</button> -->
                         <p class="text-muted d-none d-sm-block">Vista rápida de las operaciones en Aranda.</p>
                     </div>
                     <div class="col-4 text-end">
@@ -255,63 +267,38 @@ class dashboardView
 
             <script>
 
-                function toggleMenu() {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('overlay');
-                
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-                }
-
-            // Control de navegación
-            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    // 1. Mostrar spinner de carga
-                    const loader = document.getElementById('loader');
-                    loader.style.display = 'block';
-
-                    // 2. Si estamos en móvil, cerramos el menú
-                    if (window.innerWidth <= 768) {
-                        toggleMenu();
-                    }
-
-                    // 3. Simular carga de datos (luego lo quitas cuando tengas PHP real)
-                    setTimeout(() => {
-                        loader.style.display = 'none';
-                    }, 800);
-                });
-            });
-                // // 1. Función principal para abrir/cerrar
                 // function toggleMenu() {
-                //     const sidebar = document.getElementById('sidebar');
-                //     const overlay = document.getElementById('overlay');
-                    
-                //     sidebar.classList.toggle('active');
-                //     overlay.classList.toggle('active');
+                // const sidebar = document.getElementById('sidebar');
+                // const overlay = document.getElementById('overlay');
+                
+                // sidebar.classList.toggle('active');
+                // overlay.classList.toggle('active');
                 // }
 
-                // // 2. MAGIA: Cerrar automáticamente al hacer clic en una opción
+                // // Control de navegación
                 // document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                //     link.addEventListener('click', () => {
-                //         // Solo actuamos si estamos en móvil (pantalla < 768px)
+                //     link.addEventListener('click', (e) => {
+                //         // 1. Mostrar spinner de carga
+                //         const loader = document.getElementById('loader');
+                //         loader.style.display = 'block';
+
+                //         // 2. Si estamos en móvil, cerramos el menú
                 //         if (window.innerWidth <= 768) {
                 //             toggleMenu();
                 //         }
+
+                //         // 3. Simular carga de datos (luego lo quitas cuando tengas PHP real)
+                //         setTimeout(() => {
+                //             loader.style.display = 'none';
+                //         }, 800);
                 //     });
                 // });
-
-
-
-
-                // function toggleMenu() {
-                //     const sidebar = document.getElementById('sidebar');
-                //     const overlay = document.getElementById('overlay');
-                    
-                //     sidebar.classList.toggle('active');
-                //     overlay.classList.toggle('active');
-                // }
+              
             </script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
             <div class="modal fade" id="modalNuevaOrden" tabindex="-1" aria-labelledby="modalNuevaOrdenLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
@@ -323,19 +310,21 @@ class dashboardView
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div class="modal-body p-4">
-                            <form id="formNuevaOrden" action="guardar_orden.php" method="POST" enctype="multipart/form-data">
+                        <div class="modal-body p-4" id="modalBodyTractores">
+                            <!-- <form id="formNuevaOrden" action="guardar_orden.php" method="POST" enctype="multipart/form-data"> -->
                                 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-muted">Cliente / Agricultor</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                                            <select class="form-select border-start-0 bg-light" name="cliente_id" required>
+                                            <?php        $this->clientesView->mostrarSelectClientes(); ?>
+                                            <!-- <select class="form-select border-start-0 bg-light" name="cliente_id" required>
                                                 <option value="" selected disabled>Seleccionar cliente...</option>
                                                 <option value="1">Bodegas Aranda S.L.</option>
                                                 <option value="2">Agrícola Ribera</option>
-                                            </select>
+                                            </select> -->
+
                                         </div>
                                     </div>
 
@@ -343,17 +332,22 @@ class dashboardView
                                         <label class="form-label small fw-bold text-muted">Maquinaria / Tractor</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-truck"></i></span>
-                                            <select class="form-select border-start-0 bg-light" name="tractor_id" required>
+                                            <?php  
+                                                 $this->tractoresView->mostrarSelectTractores(); 
+                                            ?>
+                                            <!-- <select class="form-select border-start-0 bg-light" name="tractor_id" required>
                                                 <option value="" selected disabled>Seleccionar tractor...</option>
                                                 <option value="101">John Deere 6120M</option>
                                                 <option value="102">New Holland T6</option>
-                                            </select>
+                                            </select> -->
+
+
                                         </div>
                                     </div>
 
                                     <div class="col-12 mt-4">
                                         <label class="form-label small fw-bold text-muted">Descripción del Problema</label>
-                                        <textarea class="form-control bg-light" name="descripcion" rows="3" placeholder="Ej: Ruido en la transmisión o pérdida de fuerza en el hidráulico..." required></textarea>
+                                        <textarea class="form-control bg-light" name="observaciones" id="observaciones" rows="3" placeholder="Ej: Ruido en la transmisión o pérdida de fuerza en el hidráulico..." required></textarea>
                                     </div>
 
                                     <div class="col-md-6">
@@ -382,17 +376,23 @@ class dashboardView
 
                                 <div class="d-flex justify-content-end gap-2">
                                     <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn btn-warning fw-bold px-4 shadow-sm">
+                                    <button type="button" 
+                                    class="btn btn-warning fw-bold px-4 shadow-sm"
+                                    onclick="grabarOrdenTractor();"
+                                    >
                                         <i class="bi bi-check-lg me-1"></i> Abrir Orden
                                     </button>
                                 </div>
-                            </form>
+                            <!-- </form> -->
                         </div>
                     </div>
                 </div>
             </div>
+
         </body>
         </html>
+        <script src="/tractores/dashboard/js/dashboard.js"></script>
+        <script src="/tractores/ordenes/js/ordenes.js"></script>
         <?php
     }
 }
