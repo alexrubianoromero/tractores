@@ -18,7 +18,7 @@ class tractoresView
         echo '<option value="" selected disabled>Seleccionar Tractor</option>';
         foreach($tractores as $tractor)
         {
-            echo '<option value="'.$tractor['id'].'">'.$tractor['marca'].'-'.$tractor['numeroBastidor'].'</option>';
+            echo '<option value="'.$tractor['id'].'">'.$tractor['marca'].'-'.$tractor['tipo'].'-'.$tractor['modelo'].'</option>';
         }
             echo '</select>';
     }

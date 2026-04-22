@@ -16,6 +16,16 @@ class TractorModel extends Conexion
         $this->desconectar();
         return $results;
     }
+    
+    public function traerTractorId($idTractor)
+    {
+         $sql = "select * from tractores  where id= '".$idTractor."'   " ;
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $results = $query -> fetch(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        return $results;
+    }
 
 
     // function traerTractores()

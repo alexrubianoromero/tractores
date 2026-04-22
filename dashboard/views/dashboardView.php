@@ -2,16 +2,24 @@
 $raiz = dirname(dirname(dirname(__FILE__)));
 require_once($raiz.'/tractores/views/tractoresView.php');  
 require_once($raiz.'/clientes/views/clientesView.php');  
+require_once($raiz.'/ordenes/models/OrdenModel.php');  
+require_once($raiz.'/clientes/models/ClienteModel.php');  
+require_once($raiz.'/tractores/models/TractorModel.php');  
 class dashboardView
 {
     protected $tractoresView;
     protected $clientesView;
+    protected $ordenModel;
+    protected $clienteModel;
+    protected $tractorModel;
 
     public function __construct()
     {
         $this->tractoresView = new tractoresView();
-    
         $this->clientesView = new clientesView();
+        $this->ordenModel = new OrdenModel();
+        $this->tractorModel = new TractorModel();
+        $this->clienteModel = new ClienteModel();
     }
 
 
@@ -173,7 +181,8 @@ class dashboardView
                 </nav>
             </aside>
 
-            <main class="main-content">
+            <main class="main-content" id="div_principal_dashboard">
+
                 <div class="row align-items-center mb-4">
                     <div class="col-8">
                         <h2 class="fw-bold m-0">Estado del Taller</h2>
@@ -181,7 +190,12 @@ class dashboardView
                         <p class="text-muted d-none d-sm-block">Vista rápida de las operaciones en Aranda.</p>
                     </div>
                     <div class="col-4 text-end">
-                        <button class="btn btn-warning fw-bold shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNuevaOrden">
+                        <button 
+                            class="btn btn-warning fw-bold shadow-sm px-3" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalNuevaOrden"
+                            onclick ="formuNuevaOrden();"
+                            >
                             <i class="bi bi-plus-lg"></i> <span class="d-none d-md-inline">Nueva Orden</span>
                         </button>
                         <!-- <button class="btn btn-warning fw-bold shadow-sm px-3">
@@ -237,64 +251,15 @@ class dashboardView
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="table-responsive p-3">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr class="small text-muted">
-                                    <th>CLIENTE</th>
-                                    <th>MAQUINARIA</th>
-                                    <th class="d-none d-lg-table-cell text-center">ESTADO</th>
-                                    <th class="text-end">ACCIÓN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Bodegas Aranda S.L.</strong><br><small class="text-muted">ID: #4402</small></td>
-                                    <td>John Deere 6120M</td>
-                                    <td class="d-none d-lg-table-cell text-center">
-                                        <span class="badge bg-info text-dark rounded-pill px-3">En Proceso</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card border-0 shadow-sm rounded-4" id="div_resultados_dashboard">
+                    <?php  
+                        $ordenes = $this->ordenModel->traerOrdenes(); 
+                        $this->tablaResultadosOrdenes($ordenes); ?>
                 </div>
+
             </main>
 
-            <script>
-
-                // function toggleMenu() {
-                // const sidebar = document.getElementById('sidebar');
-                // const overlay = document.getElementById('overlay');
-                
-                // sidebar.classList.toggle('active');
-                // overlay.classList.toggle('active');
-                // }
-
-                // // Control de navegación
-                // document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                //     link.addEventListener('click', (e) => {
-                //         // 1. Mostrar spinner de carga
-                //         const loader = document.getElementById('loader');
-                //         loader.style.display = 'block';
-
-                //         // 2. Si estamos en móvil, cerramos el menú
-                //         if (window.innerWidth <= 768) {
-                //             toggleMenu();
-                //         }
-
-                //         // 3. Simular carga de datos (luego lo quitas cuando tengas PHP real)
-                //         setTimeout(() => {
-                //             loader.style.display = 'none';
-                //         }, 800);
-                //     });
-                // });
-              
-            </script>
+          
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -307,11 +272,71 @@ class dashboardView
                             <h5 class="modal-title fw-bold" id="modalNuevaOrdenLabel">
                                 <i class="bi bi-file-earmark-plus text-warning me-2"></i>Nueva Orden de Trabajo
                             </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button 
+                                type="button" 
+                                class="btn-close btn-close-white" 
+                                data-bs-dismiss="modal" aria-label="Close"
+                                onclick="tablaResultadosOrdenes();";
+                                ></button>
                         </div>
 
                         <div class="modal-body p-4" id="modalBodyTractores">
-                            <!-- <form id="formNuevaOrden" action="guardar_orden.php" method="POST" enctype="multipart/form-data"> -->
+                           <?php  $this->formuNuevaOrden();  ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </body>
+        </html>
+        <script src="/tractores/dashboard/js/dashboard.js"></script>
+        <script src="/tractores/ordenes/js/ordenes.js"></script>
+        <?php
+    }
+
+    public function tablaResultadosOrdenes($ordenes)
+    {
+        ?>
+             <div class="table-responsive p-3">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr class="small text-muted">
+                                    <th>CLIENTE</th>
+                                    <th>MAQUINARIA</th>
+                                    <th class="d-none d-lg-table-cell text-center">ESTADO</th>
+                                    <th class="text-end">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            foreach($ordenes as $orden)
+                                {
+                                  $infoCliente =   $this->clienteModel->traerClienteId($orden['idCliente']); 
+                                  $infoTractor =     $this->tractorModel->traerTractorId($orden['idTractor']); 
+                                  echo '<tr>';  
+                                  echo '<td><strong>'.$infoCliente['nombre'].'</strong><br><small class="text-muted">ID: #4402</small></td>';
+                                  echo '<td>'.$infoTractor['marca'].'</td>';
+                                  echo'<td class="d-none d-lg-table-cell text-center">';
+                                  echo '<span class="badge bg-info text-dark rounded-pill px-3">En Proceso</span>';
+                                  echo '</td>';
+                                  echo '<td class="text-end">
+                                      <button class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></button>
+                                  </td>';
+                                  echo '</tr>';
+
+                                }
+                            ?>
+
+                            </tbody>
+                        </table>
+                    </div>
+        <?php
+    }
+
+    public function formuNuevaOrden()
+    {
+      ?>
+       <!-- <form id="formNuevaOrden" action="guardar_orden.php" method="POST" enctype="multipart/form-data"> -->
                                 
                                 <div class="row g-3">
                                     <div class="col-md-6">
@@ -384,16 +409,7 @@ class dashboardView
                                     </button>
                                 </div>
                             <!-- </form> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </body>
-        </html>
-        <script src="/tractores/dashboard/js/dashboard.js"></script>
-        <script src="/tractores/ordenes/js/ordenes.js"></script>
-        <?php
+      <?php
     }
 }
 

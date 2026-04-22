@@ -31,12 +31,12 @@ class appController
                 $this->menuTractores();
 
         }
-        if($_REQUEST['opcion']=='grabarOrdenTractor')
-        {
-                //  $this->view->menuTractores(); 
-                echo 'llego a grabar tractores ';
+        // if($_REQUEST['opcion']=='grabarOrdenTractor')
+        // {
+        //         //  $this->view->menuTractores(); 
+        //         echo 'llego a grabar tractores ';
 
-        }
+        // }
         // if($_REQUEST['opcion']=='formuRecaudacion')
         // {
         //          $this->view->formuRecaudacion(); 

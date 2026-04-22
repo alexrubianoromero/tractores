@@ -17,6 +17,16 @@ class ClienteModel extends Conexion
         return $results;
     }
 
+    public function traerClienteId($idCliente)
+    {
+         $sql = "select * from cliente0 where idcliente = '".$idCliente."'   " ;
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $results = $query -> fetch(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        return $results;
+    }
+
 
 
     // function traerCLienteId($idCliente)
