@@ -17,6 +17,28 @@ class OrdenModel extends Conexion
         return $results;
     }
 
+    public function traerOrdenesFiltroEstado($estado)
+    {
+        $sql = "select * from ordenes where estado = '".$estado."' " ;
+
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $results = $query -> fetchAll(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        $filas = $query->rowCount();
+        return $filas;
+    }
+    public function traerOrdenesPendientePieza()
+    {
+        $sql = "select * from ordenes where pendientePieza > '0' " ;
+
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $results = $query -> fetchAll(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        $filas = $query->rowCount();
+        return $filas;
+    }
 
       public function grabarOrdenTractor($request)
     {

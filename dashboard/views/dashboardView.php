@@ -3,6 +3,7 @@ $raiz = dirname(dirname(dirname(__FILE__)));
 require_once($raiz.'/tractores/views/tractoresView.php');  
 require_once($raiz.'/clientes/views/clientesView.php');  
 require_once($raiz.'/ordenes/models/OrdenModel.php');  
+require_once($raiz.'/ordenes/models/EstadoOrdenModel.php');  
 require_once($raiz.'/clientes/models/ClienteModel.php');  
 require_once($raiz.'/tractores/models/TractorModel.php');  
 class dashboardView
@@ -10,6 +11,7 @@ class dashboardView
     protected $tractoresView;
     protected $clientesView;
     protected $ordenModel;
+    protected $estadoOrdenModel;
     protected $clienteModel;
     protected $tractorModel;
 
@@ -18,6 +20,7 @@ class dashboardView
         $this->tractoresView = new tractoresView();
         $this->clientesView = new clientesView();
         $this->ordenModel = new OrdenModel();
+        $this->estadoOrdenModel = new EstadoOrdenModel();
         $this->tractorModel = new TractorModel();
         $this->clienteModel = new ClienteModel();
     }
@@ -204,51 +207,9 @@ class dashboardView
                     </div>
                 </div>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #0d6efd;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <small class="text-muted text-uppercase fw-bold">En Taller</small>
-                                    <h2 class="fw-bold mb-0">12</h2>
-                                </div>
-                                <i class="bi bi-wrench-adjustable fs-1 text-primary opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #198754;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <small class="text-muted text-uppercase fw-bold">Terminados</small>
-                                    <h2 class="fw-bold mb-0">5</h2>
-                                </div>
-                                <i class="bi bi-check-circle fs-1 text-success opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #dc3545;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <small class="text-muted text-uppercase fw-bold">Pendiente Pieza</small>
-                                    <h2 class="fw-bold mb-0">3</h2>
-                                </div>
-                                <i class="bi bi-clock-history fs-1 text-danger opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #ffc107;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <small class="text-muted text-uppercase fw-bold">Facturación</small>
-                                    <h2 class="fw-bold mb-0">8.42k€</h2>
-                                </div>
-                                <i class="bi bi-currency-euro fs-1 text-warning opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
+                <div class="row g-3 mb-4" id="divrResumenInformacionTaller">
+
+                   <?php  $this->resumenInformacionTaller(); ?>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4" id="div_resultados_dashboard">
@@ -286,16 +247,148 @@ class dashboardView
                     </div>
                 </div>
             </div>
-
+            <?php  $this->ventanaModalVerInfo();  ?>
         </body>
         </html>
         <script src="/tractores/dashboard/js/dashboard.js"></script>
         <script src="/tractores/ordenes/js/ordenes.js"></script>
         <?php
     }
+    public function ventanaModalVerInfo()
+    {
+        ?>
+        <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg"> <div class="modal-content">
+            
+            <div class="modal-header">
+                <h5 class="modal-title">Orden #12345</h5>
+                <span class="badge bg-info text-dark rounded-pill px-3 ms-2">En proceso</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h6 class="text-muted">Cliente:</h6>
+                    <p><strong>Juan Pérez</strong><br>Calle Falsa 123, Ciudad</p>
+                </div>
+                <div class="col-sm-6 text-sm-end">
+                    <h6 class="text-muted">Fecha:</h6>
+                    <p>22 de Abril, 2026</p>
+                </div>
+                </div>
+
+                <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Cant.</th>
+                        <th class="text-end">Precio</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Cámara Reflex Pro</td>
+                        <td class="text-center">1</td>
+                        <td class="text-end">$1,200.00</td>
+                    </tr>
+                    <tr>
+                        <td>Trípode Aluminio</td>
+                        <td class="text-center">2</td>
+                        <td class="text-end">$150.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                <div class="col-7"></div>
+                <div class="col-5">
+                    <div class="d-flex justify-content-between">
+                    <span>Subtotal:</span>
+                    <span>$1,350.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold mt-2">
+                    <span>Total:</span>
+                    <span class="text-primary">$1,350.00</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        <?php
+    }
+
+    public function resumenInformacionTaller()
+    {
+        $enProceso =   $this->ordenModel->traerOrdenesFiltroEstado(0); 
+        $ordenLista =   $this->ordenModel->traerOrdenesFiltroEstado(1); 
+        $pendientePieza = $this->ordenModel->traerOrdenesPendientePieza();
+        //   echo '<pre>'; 
+        // print_r($enProceso);
+        // echo '</pre>';
+        // die();
+        ?>
+         <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #0d6efd;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold">En Taller</small>
+                                    <h2 class="fw-bold mb-0"><?php echo $enProceso; ?></h2>
+                                </div>
+                                <i class="bi bi-wrench-adjustable fs-1 text-primary opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #198754;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold">Terminados</small>
+                                    <h2 class="fw-bold mb-0"><?php echo $ordenLista; ?> </h2>
+                                </div>
+                                <i class="bi bi-check-circle fs-1 text-success opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #dc3545;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold">Pendiente Pieza</small>
+                                    <h2 class="fw-bold mb-0"><?php echo $pendientePieza; ?></h2>
+                                </div>
+                                <i class="bi bi-clock-history fs-1 text-danger opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card card-stat bg-white p-3 shadow-sm" style="border-color: #ffc107;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold">Facturación</small>
+                                    <h2 class="fw-bold mb-0">8.42k€</h2>
+                                </div>
+                                <i class="bi bi-currency-euro fs-1 text-warning opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+
+        <?php
+    }
 
     public function tablaResultadosOrdenes($ordenes)
     {
+
         ?>
              <div class="table-responsive p-3">
                         <table class="table table-hover align-middle">
@@ -311,16 +404,23 @@ class dashboardView
                             <?php
                             foreach($ordenes as $orden)
                                 {
+                                  $infoEstado =   $this->estadoOrdenModel->traerEstadoId($orden['estado']); 
                                   $infoCliente =   $this->clienteModel->traerClienteId($orden['idCliente']); 
                                   $infoTractor =     $this->tractorModel->traerTractorId($orden['idTractor']); 
+                                  if($orden['estado']==0){ $color = 'bg-info';}
+                                  if($orden['estado']==1){ $color = 'bg-warning';}
                                   echo '<tr>';  
                                   echo '<td><strong>'.$infoCliente['nombre'].'</strong><br><small class="text-muted">ID: #4402</small></td>';
                                   echo '<td>'.$infoTractor['marca'].'</td>';
                                   echo'<td class="d-none d-lg-table-cell text-center">';
-                                  echo '<span class="badge bg-info text-dark rounded-pill px-3">En Proceso</span>';
+                                  echo '<span class="badge '.$color.' text-dark rounded-pill px-3">'.$infoEstado['descripcion'].'</span>';
                                   echo '</td>';
                                   echo '<td class="text-end">
-                                      <button class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></button>
+                                      <button class="btn btn-sm btn-light border"
+                                         data-bs-toggle="modal" 
+                                        data-bs-target="#orderDetailModal"
+                                        
+                                      ><i class="bi bi-eye"></i></button>
                                   </td>';
                                   echo '</tr>';
 
