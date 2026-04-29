@@ -16,6 +16,15 @@ class OrdenModel extends Conexion
         $this->desconectar();
         return $results;
     }
+    public function traerOrdenId($idOrden)
+    {
+         $sql = "select * from ordenes  where id = '".$idOrden."'  " ;
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $results = $query -> fetch(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        return $results;
+    }
 
     public function traerOrdenesFiltroEstado($estado)
     {

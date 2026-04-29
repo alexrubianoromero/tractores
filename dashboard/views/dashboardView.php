@@ -254,6 +254,8 @@ class dashboardView
         <script src="/tractores/ordenes/js/ordenes.js"></script>
         <?php
     }
+
+
     public function ventanaModalVerInfo()
     {
         ?>
@@ -266,15 +268,52 @@ class dashboardView
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="modal-body">
-                <div class="row mb-4">
+            <div class="modal-body" id="modalBodyDetalleOrden">
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        <?php
+    }
+
+    public function mostrarDetalleOrden($idOrden)
+    {
+        $infoOrden =      $this->ordenModel->traerOrdenId($idOrden); 
+        $infoCliente =    $this->clienteModel->traerClienteId($infoOrden['idCliente']);
+        ?>
+                        <div class="row mb-4">
                 <div class="col-sm-6">
                     <h6 class="text-muted">Cliente:</h6>
-                    <p><strong>Juan Pérez</strong><br>Calle Falsa 123, Ciudad</p>
+                    <p><strong><?php   echo $infoCliente['nombre'];  ?></strong><br><?php   echo $infoCliente['direccion'];  ?></p>
                 </div>
                 <div class="col-sm-6 text-sm-end">
                     <h6 class="text-muted">Fecha:</h6>
-                    <p>22 de Abril, 2026</p>
+                    <p>
+                        <?php
+                        // Tu fecha desde la base de datos o variable
+                        $fecha_db = $infoOrden['fecha']; 
+                        $fecha = new DateTime($fecha_db);
+
+                        // Configuramos el formateador: idioma español, formato largo
+                        $formateador = new IntlDateFormatter(
+                            'es_ES',
+                            IntlDateFormatter::LONG, // Esto da el formato "22 de abril de 2026"
+                            IntlDateFormatter::NONE
+                        );
+
+                        // Si quieres exactamente "22 de Abril, 2026" (con la coma)
+                        $formateador->setPattern("d 'de' MMMM, y");
+
+                        echo ucwords($formateador->format($fecha)); 
+                        // Resultado: 22 de Abril, 2026
+                        ?>
+
+                    </p>
                 </div>
                 </div>
 
@@ -317,14 +356,7 @@ class dashboardView
                     </div>
                 </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-            </div>
-        </div>
-        </div>
         <?php
     }
 
@@ -419,7 +451,7 @@ class dashboardView
                                       <button class="btn btn-sm btn-light border"
                                          data-bs-toggle="modal" 
                                         data-bs-target="#orderDetailModal"
-                                        
+                                        onclick="mostrarDetalleOrden('.$orden['id'].');"
                                       ><i class="bi bi-eye"></i></button>
                                   </td>';
                                   echo '</tr>';
