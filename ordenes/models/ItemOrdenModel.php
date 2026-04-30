@@ -26,6 +26,26 @@ class ItemOrdenModel extends Conexion
         $this->desconectar();
         return $results;
     }
+    public function traerSumaItemsOrden($idOrden)
+    {
+         $sql = "select sum(total_item) as total   from item_orden where no_factura = '".$idOrden."' " ;
+        //  die($sql);
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $result = $query -> fetch(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        return $result;
+    }
+    public function traerSumaTotalFacturacion()
+    {
+         $sql = "select sum(total_item) as total   from item_orden  " ;
+        //  die($sql);
+        $query = $this->connectMysql()->prepare($sql); 
+        $query -> execute(); 
+        $result = $query -> fetch(PDO::FETCH_ASSOC); 
+        $this->desconectar();
+        return $result;
+    }
 
       public function agregarItemOrden($request)
     {
@@ -40,6 +60,7 @@ class ItemOrdenModel extends Conexion
         $query->execute();
         $this->desconectar();
     }
+
 
 
 }

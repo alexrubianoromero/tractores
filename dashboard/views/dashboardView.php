@@ -264,16 +264,24 @@ class dashboardView
                
         <?php
     }
+    public function cabeceraModalTractor($idOrden)
+    {
+               $infoOrden = $this->ordenModel->traerOrdenId($idOrden);
+               $infoEstado = $this->estadoOrdenModel->traerEstadoId($infoOrden['estado']);
+        ?>
+         <h5 class="modal-title">Orden #<?php  echo $idOrden ; ?></h5>
+                <span class="badge bg-info text-dark rounded-pill px-3 ms-2"><?php echo $infoEstado['descripcion']; ?></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <?php
+    }
     public function ventanaModalVerInfo()
     {
         ?>
         <div class="modal fade" id="orderDetailModal" tabindex="-1">
         <div class="modal-dialog modal-lg"> <div class="modal-content">
             
-            <div class="modal-header">
-                <h5 class="modal-title">Orden #12345</h5>
-                <span class="badge bg-info text-dark rounded-pill px-3 ms-2">En proceso</span>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header" id="divCabeceraDelModal">
+               
             </div>
 
             <div class="modal-body" id="modalBodyDetalleOrden">
@@ -339,13 +347,21 @@ class dashboardView
                 <div class="row">
                 <div class="col-7"></div>
                 <div class="col-5">
+                    <?php
+                         $suma=  $this->itemOrdenModel->traerSumaItemsOrden($idOrden);  
+                                //    echo '<pre>'; 
+                                //     print_r($suma); 
+                                //     echo '</pre>';
+                                //     die();
+                    
+                    ?>
                     <div class="d-flex justify-content-between">
                     <span>Subtotal:</span>
-                    <span>$1,350.00</span>
+                    <span><?php echo number_format($suma['total'], 2, ',', '.');  ?></span>
                     </div>
                     <div class="d-flex justify-content-between fw-bold mt-2">
                     <span>Total:</span>
-                    <span class="text-primary">$1,350.00</span>
+                    <span class="text-primary"><?php echo number_format($suma['total'], 2, ',', '.');  ?></span>
                     </div>
                 </div>
                 </div>
@@ -358,7 +374,7 @@ class dashboardView
         
         ?>
           <div class="table-responsive">
-                        <table class="table table-borderless">
+                        <table class="table table-borderless table w-100" style="table-layout: fixed;" >
                             <thead class="table-light">
                                 <tr>
                                     <th>Producto</th>
@@ -379,11 +395,7 @@ class dashboardView
                                         <?php  
                                             // $this->resultadosItemOrden($idOrden); 
                                             $itemsOrden =  $this->itemOrdenModel->traerItemsOrden($idOrden);
-                                                // echo 'aqui deberia salir el resultado'; 
-                                                // echo '<pre>';
-                                                // print_r($itemsOrden); 
-                                                // echo '</pre>';
-                                                // die();
+                                            
                                             foreach($itemsOrden as $item)
                                             {
                                                 echo '<tr>';  
@@ -422,6 +434,7 @@ class dashboardView
         $enProceso =   $this->ordenModel->traerOrdenesFiltroEstado(0); 
         $ordenLista =   $this->ordenModel->traerOrdenesFiltroEstado(1); 
         $pendientePieza = $this->ordenModel->traerOrdenesPendientePieza();
+        $totalFacturacion = $this->itemOrdenModel->traerSumaTotalFacturacion();
         //   echo '<pre>'; 
         // print_r($enProceso);
         // echo '</pre>';
@@ -465,7 +478,8 @@ class dashboardView
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted text-uppercase fw-bold">Facturación</small>
-                                    <h2 class="fw-bold mb-0">8.42k€</h2>
+                                    <h2 class="fw-bold mb-0">    <?php echo number_format($totalFacturacion['total'], 0, ',', '.');  ?></h2>
+                            
                                 </div>
                                 <i class="bi bi-currency-euro fs-1 text-warning opacity-50"></i>
                             </div>

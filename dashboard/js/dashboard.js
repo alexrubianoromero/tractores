@@ -94,7 +94,26 @@ function mostrarDetalleOrden(idOrden){
                 // +'&idTractor='+idTractor
                 // +'&observaciones='+observaciones
     );
+    cabeceraModalTractor(idOrden);
 }
+
+function cabeceraModalTractor(idOrden){
+    const http=new XMLHttpRequest();
+       const url = '../dashboard/dashboard.php';
+    http.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+              console.log(this.responseText);
+           document.getElementById("divCabeceraDelModal").innerHTML  = this.responseText;
+        }
+    };
+    http.open("POST",url);
+    http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    http.send("opcion=cabeceraModalTractor"
+        +'&idOrden='+idOrden
+    );
+}
+
+
 
 
 function mostrar()

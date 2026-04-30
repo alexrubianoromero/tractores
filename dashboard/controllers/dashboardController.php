@@ -45,6 +45,12 @@ class dashboardController
                 // echo 'Registro Realizado ';
 
         }
+        if($_REQUEST['opcion']=='cabeceraModalTractor')
+        {
+                $this->view->cabeceraModalTractor($_REQUEST['idOrden']);
+                // echo 'Registro Realizado ';
+
+        }
         if($_REQUEST['opcion']=='tablaResultadosOrdenes')
         {
                 $ordenes =    $this->ordenModel->traerOrdenes(); 

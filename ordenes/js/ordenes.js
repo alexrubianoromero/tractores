@@ -52,6 +52,8 @@ function agregarItemOrden(idOrden){
     // setInterval(() => {
     //     resultadosItemOrden(idOrden);
     // }, 300);
+        // cabeceraModalTractor(idOrden);
+     resumenInformacionTaller();
 }
 function resultadosItemOrden(idOrden){
 
