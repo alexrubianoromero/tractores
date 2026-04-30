@@ -3,6 +3,7 @@ $raiz = dirname(dirname(dirname(__FILE__)));
 require_once($raiz.'/tractores/views/tractoresView.php');  
 require_once($raiz.'/clientes/views/clientesView.php');  
 require_once($raiz.'/ordenes/models/OrdenModel.php');  
+require_once($raiz.'/ordenes/models/ItemOrdenModel.php');  
 require_once($raiz.'/ordenes/models/EstadoOrdenModel.php');  
 require_once($raiz.'/clientes/models/ClienteModel.php');  
 require_once($raiz.'/tractores/models/TractorModel.php');  
@@ -11,6 +12,7 @@ class dashboardView
     protected $tractoresView;
     protected $clientesView;
     protected $ordenModel;
+    protected $itemOrdenModel;
     protected $estadoOrdenModel;
     protected $clienteModel;
     protected $tractorModel;
@@ -20,6 +22,7 @@ class dashboardView
         $this->tractoresView = new tractoresView();
         $this->clientesView = new clientesView();
         $this->ordenModel = new OrdenModel();
+        $this->itemOrdenModel = new ItemOrdenModel();
         $this->estadoOrdenModel = new EstadoOrdenModel();
         $this->tractorModel = new TractorModel();
         $this->clienteModel = new ClienteModel();
@@ -187,7 +190,7 @@ class dashboardView
             <main class="main-content" id="div_principal_dashboard">
 
                 <div class="row align-items-center mb-4">
-                    <div class="col-8">
+                     <div class="col-8">
                         <h2 class="fw-bold m-0">Estado del Taller</h2>
                         <!-- <button onclick="mostrar();">mostrar</button> -->
                         <p class="text-muted d-none d-sm-block">Vista rápida de las operaciones en Aranda.</p>
@@ -205,6 +208,7 @@ class dashboardView
                             <i class="bi bi-plus-lg"></i> <span class="d-none d-md-inline">Nueva Orden</span>
                         </button> -->
                     </div>
+                   
                 </div>
 
                 <div class="row g-3 mb-4" id="divrResumenInformacionTaller">
@@ -255,7 +259,11 @@ class dashboardView
         <?php
     }
 
-
+    public function menuIndicadores(){
+        ?>
+               
+        <?php
+    }
     public function ventanaModalVerInfo()
     {
         ?>
@@ -283,10 +291,12 @@ class dashboardView
 
     public function mostrarDetalleOrden($idOrden)
     {
+        // die("detalle orden ".$idOrden);
         $infoOrden =      $this->ordenModel->traerOrdenId($idOrden); 
         $infoCliente =    $this->clienteModel->traerClienteId($infoOrden['idCliente']);
+    
         ?>
-                        <div class="row mb-4">
+            <div class="row mb-4">
                 <div class="col-sm-6">
                     <h6 class="text-muted">Cliente:</h6>
                     <p><strong><?php   echo $infoCliente['nombre'];  ?></strong><br><?php   echo $infoCliente['direccion'];  ?></p>
@@ -315,30 +325,13 @@ class dashboardView
 
                     </p>
                 </div>
-                </div>
 
-                <div class="table-responsive">
-                <table class="table table-borderless">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Producto</th>
-                        <th class="text-center">Cant.</th>
-                        <th class="text-end">Precio</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Cámara Reflex Pro</td>
-                        <td class="text-center">1</td>
-                        <td class="text-end">$1,200.00</td>
-                    </tr>
-                    <tr>
-                        <td>Trípode Aluminio</td>
-                        <td class="text-center">2</td>
-                        <td class="text-end">$150.00</td>
-                    </tr>
-                    </tbody>
-                </table>
+            </div>
+
+                <div id="divItemOrden">
+                  <?php
+                        $this->infoItemOrden($idOrden);
+                  ?>
                 </div>
 
                 <hr>
@@ -359,6 +352,70 @@ class dashboardView
 
         <?php
     }
+
+    public function infoItemOrden($idOrden)
+    {
+        
+        ?>
+          <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input class="formControl" id="producto"></td>
+                                    <td class="text-center"><input class="formControl" id="cantidad"></td>
+                                    <td class="text-end"><input class="formControl" id="precio"></td>
+                                    <td class="text-end"><button class="btn btn-warning" onclick="agregarItemOrden(<?php echo $idOrden;  ?>);">Agregar</button></td>
+                                </tr>
+                                 <!--<div id="divResultadosItemOrden"> -->
+                            </tbody>
+                                        <?php  
+                                            // $this->resultadosItemOrden($idOrden); 
+                                            $itemsOrden =  $this->itemOrdenModel->traerItemsOrden($idOrden);
+                                                // echo 'aqui deberia salir el resultado'; 
+                                                // echo '<pre>';
+                                                // print_r($itemsOrden); 
+                                                // echo '</pre>';
+                                                // die();
+                                            foreach($itemsOrden as $item)
+                                            {
+                                                echo '<tr>';  
+                                                echo '<td>'.$item['descripcion'].'</td>';
+                                                echo '<td>'.$item['cantidad'].'</td>';
+                                                echo '<td>'.$item['total_item'].'</td>';
+                                                echo '</tr>';
+                                            }
+
+                                        ?>
+                                     <!--  </div> -->
+                            </tbody>
+                        </table>
+                    </div>
+        <?php
+    }
+
+
+
+    // public function resultadosItemOrden($idOrden)
+    // {
+    //     die("desde resultados  item orden ".$idOrden);
+    //     $itemsOrden =  $this->itemOrdenModel->traerItemsOrden($idOrden);
+    //     foreach($itemsOrden as $item)
+    //         {
+    //             echo '<tr>';  
+    //             echo '<td>'.$item['descripcion'].'</td>';
+    //             echo '<td>'.$item['cantidad'].'</td>';
+    //             echo '<td>'.$item['total_item'].'</td>';
+    //             echo '</tr>';
+    //         }
+    // }
 
     public function resumenInformacionTaller()
     {

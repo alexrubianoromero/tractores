@@ -33,6 +33,12 @@ class dashboardController
                 // echo 'Registro Realizado ';
 
         }
+        if($_REQUEST['opcion']=='resumenInformacionTaller')
+        {
+                $this->view->resumenInformacionTaller();
+                // echo 'Registro Realizado ';
+
+        }
         if($_REQUEST['opcion']=='mostrarDetalleOrden')
         {
                 $this->view->mostrarDetalleOrden($_REQUEST['idOrden']);
